@@ -1,0 +1,564 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  role        String           @unique
+  slug        String?          @unique
+  title_ar    String?
+  title_en   String?
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+model User {
+  id             Int         @id @default(autoincrement())
+  email          String?     @unique
+  phone          String?     @unique
+  password       String
+  name           String?
+  avatar         String?
+  provider_id    String?     @default("local")
+  provider_name  String?     @default("local")
+  email_verified Boolean     @default(false)
+  phone_verified Boolean     @default(false)
+  auth_method    AuthMethod? @default(email)
+  role_id        Int
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  addresses         Address[]
+  orders            Order[]
+  reviews           Review[]
+  store             Store?
+  userDevices       UserDevice[]
+  vehicle           Vehicle?
+  deliveryLocations DeliveryLocation[]
+  role              Role               @relation(fields: [role_id], references: [id])
+  is_active         Boolean            @default(true)
+  referral_code     String?            @unique
+  referred_by       Int?
+  points            Int                @default(0)
+  wallet_balance    Float              @default(0)
+
+  @@index([role_id], map: "users_role_id_fkey")
+  @@map("users")
+}
+
+model UserDevice {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  pushToken String   @unique
+  deviceId  String?
+  platform  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_devices")
+}
+
+model Vehicle {
+  id       Int  @id @default(autoincrement())
+  userId   Int  @unique
+  area_id  Int?
+  place_id Int?
+
+  plateNumber    String?   @unique
+  type           String?
+  model          String?
+  capacity       Int?
+  license        String?
+  color          String?
+  insurance      String?
+  insurance_date DateTime?
+
+  image        String?
+  is_active    Boolean  @default(true)
+  is_verified  Boolean  @default(false)
+  is_available Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  area  Area?  @relation(fields: [area_id], references: [id], onDelete: Cascade)
+  place Place? @relation(fields: [place_id], references: [id], onDelete: Cascade)
+
+  @@index([area_id], map: "vehicles_area_id_fkey")
+  @@index([place_id], map: "vehicles_place_id_fkey")
+  @@map("vehicles")
+}
+
+model DeliveryLocation {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  latitude  Float?
+  longitude Float?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("delivery_locations")
+}
+
+model Place {
+  id          Int              @id @default(autoincrement())
+  name        String
+  description String?
+  address     String?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  areas       Area[]
+  storeTypes  PlaceStoreType[]
+  stores      Store[]
+  vehicles    Vehicle[]
+
+  @@map("places")
+}
+
+model StoreType {
+  id          Int              @id @default(autoincrement())
+  name_ar     String
+  name_en     String
+  description String?
+  image       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  places      PlaceStoreType[]
+  stores      Store[]
+  categories  Category[]
+
+  @@map("store_types")
+}
+
+model PlaceStoreType {
+  place_id      Int
+  store_type_id Int
+  place         Place     @relation(fields: [place_id], references: [id])
+  storeType     StoreType @relation(fields: [store_type_id], references: [id])
+
+  @@id([place_id, store_type_id])
+  @@index([store_type_id], map: "place_store_types_store_type_id_fkey")
+  @@map("place_store_types")
+}
+
+model Store {
+  id              Int             @id @default(autoincrement())
+  name            String
+  address         String?
+  phone           String?
+  logo            String?
+  banner          String?
+  start_time      String?
+  end_time        String?
+  devlivery_time  Float?
+  rating          Float?          @default(0)
+  is_active       Boolean         @default(false)
+  is_verified     Boolean         @default(false)
+  is_featured     Boolean         @default(false)
+  latitude        Float?
+  longitude       Float?
+  user_id         Int             @unique
+  store_type_id   Int
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  place_id        Int             @default(1)
+  storeCategories StoreCategory[]
+  orders          Order[]
+  products        Product[]
+  reviews         Review[]
+  place           Place           @relation(fields: [place_id], references: [id])
+  storeType       StoreType       @relation(fields: [store_type_id], references: [id])
+  user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([place_id], map: "stores_place_id_fkey")
+  @@index([store_type_id], map: "stores_store_type_id_fkey")
+  @@map("stores")
+}
+
+model Category {
+  id              Int             @id @default(autoincrement())
+  name            String
+  description     String?
+  image           String?
+  store_type_id   Int
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  storeType       StoreType       @relation(fields: [store_type_id], references: [id], onDelete: Cascade)
+  products        Product[]
+  storeCategories StoreCategory[]
+
+  @@unique([name, store_type_id])
+  @@index([store_type_id])
+  @@map("categories")
+}
+
+model StoreCategory {
+  store_id    Int
+  category_id Int
+  createdAt   DateTime @default(now())
+
+  store    Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@id([store_id, category_id])
+  @@index([category_id])
+  @@map("store_categories")
+}
+
+model Product {
+  id                Int                @id @default(autoincrement())
+  name              String
+  image             String?
+  description       String?
+  price             Float?
+  on_sale           Boolean            @default(false)
+  sale_price        Float?
+  product_type      String?            @default("simple")
+  is_active         Boolean            @default(true)
+  is_featured       Boolean            @default(false)
+  is_available      Boolean            @default(true)
+  store_id          Int
+  category_id       Int
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  attributeValues   AttributeValue[]
+  productAttributes ProductAttribute[]
+  category          Category           @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  store             Store              @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([category_id], map: "products_category_id_fkey")
+  @@index([store_id], map: "products_store_id_fkey")
+  @@map("products")
+}
+
+model Attribute {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  attributeValues   AttributeValue[]
+  productAttributes ProductAttribute[]
+
+  @@map("attributes")
+}
+
+model AttributeValue {
+  id           Int       @id @default(autoincrement())
+  value        String
+  price        Float?
+  attribute_id Int
+  product_id   Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  attribute    Attribute @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  product      Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([attribute_id], map: "attribute_values_attribute_id_fkey")
+  @@index([product_id], map: "attribute_values_product_id_fkey")
+  @@map("attribute_values")
+}
+
+model ProductAttribute {
+  id           Int       @id @default(autoincrement())
+  product_id   Int
+  attribute_id Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  attribute    Attribute @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  product      Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([attribute_id], map: "product_attributes_attribute_id_fkey")
+  @@index([product_id], map: "product_attributes_product_id_fkey")
+  @@map("product_attributes")
+}
+
+model Order {
+  id               Int           @id @default(autoincrement())
+  device_id        String?
+  order_group_id   Int?
+  store_id         Int
+  user_id          Int?
+  total_price      Float
+  status           OrderStatus   @default(pending)
+  area_id          Int?
+  area             Area?         @relation(fields: [area_id], references: [id], onDelete: Cascade)
+  delivered_at     DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  store            Store         @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  user             User?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  orderGroup       OrderGroup?   @relation(fields: [order_group_id], references: [id], onDelete: Cascade)
+  orderItems       OrderItem[]
+  @@index([store_id], map: "orders_store_id_fkey")
+  @@index([user_id], map: "orders_user_id_fkey")
+  @@map("orders")
+}
+
+
+model OrderGroup {
+  id          Int      @id @default(autoincrement())
+  group_code  String   @unique
+  user_id     Int?
+  customer_name String?
+  phone       String?
+  delivery_address String?
+  area_id     Int?
+  area_name   String?
+  delivery_fee Float?
+  payment_method  PaymentMethod @default(cash)
+  status          OrderStatus   @default(pending)
+  delivered_at     DateTime?
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  @@map("order_groups")
+}
+
+
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+  order_id  Int
+
+  name       String?
+  image      String?
+  price      Float?
+  quantity   Int?
+
+  attribute_name  String?
+  attribute_value String?
+  attribute_price Float?
+  store_id     Int?
+  store_name   String?
+
+  order     Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  @@map("order_items")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Float
+  comment   String?
+  store_id  Int
+  user_id   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id], map: "reviews_store_id_fkey")
+  @@index([user_id], map: "reviews_user_id_fkey")
+  @@map("reviews")
+}
+
+model Coupon {
+  id            Int          @id @default(autoincrement())
+  code          String       @unique
+  discount      Float
+  description   String?
+  discount_type DiscountType @default(percentage)
+  expiresAt     DateTime
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("coupons")
+}
+
+model Notification {
+  id           Int       @id @default(autoincrement())
+  title        String
+  message      String
+  data         Json?
+  is_read      Boolean   @default(false)
+  delivered_at DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  audiences NotificationAudience[]
+  reads     NotificationRead[]
+
+  @@map("notifications")
+}
+
+model NotificationAudience {
+  id              Int          @id @default(autoincrement())
+  notification_id Int
+  target_type     AudienceType
+  target_id       Int?
+  createdAt       DateTime     @default(now())
+
+  notification Notification @relation(fields: [notification_id], references: [id], onDelete: Cascade)
+
+  @@map("notification_audiences")
+}
+
+model NotificationRead {
+  id              Int       @id @default(autoincrement())
+  notification_id Int
+  user_id         Int
+  read_at         DateTime?
+
+  notification Notification @relation(fields: [notification_id], references: [id], onDelete: Cascade)
+
+  @@unique([notification_id, user_id])
+  @@map("notification_reads")
+}
+
+model Area {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  area_code   String?
+  description String?
+  price       Float
+  place_id    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  place       Place     @relation(fields: [place_id], references: [id], onDelete: Cascade)
+  orders      Order[]
+  addresses   Address[]
+  vehicles    Vehicle[]
+
+  @@index([place_id], map: "areas_place_id_fkey")
+  @@map("areas")
+}
+
+model Page {
+  id           Int      @id @default(autoincrement())
+  title        String
+  slug         String   @unique
+  content      String
+  is_published Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("pages")
+}
+
+model Address {
+  id        Int     @id @default(autoincrement())
+  user_id   Int
+  area_id   Int?
+  latitude  Float?
+  longitude Float?
+  phone     String?
+
+  address   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  area      Area?    @relation(fields: [area_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], map: "addresses_user_id_fkey")
+  @@index([area_id], map: "addresses_area_id_fkey")
+  @@map("addresses")
+}
+
+model banner {
+  id           Int      @id @default(autoincrement())
+  title        String
+  slug         String   @unique
+  content      String
+  image        String?
+  link         String?
+  is_published Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("banners")
+}
+
+enum SettingType {
+  string
+  number
+  boolean
+  json
+}
+
+enum OrderStatus {
+  pending
+  accepted
+  preparing
+  on_the_way
+  delivered
+  cancelled
+}
+
+enum PaymentMethod {
+  cash
+  credit_card
+  vodafone_cash
+  instapay
+}
+
+enum DiscountType {
+  percentage
+  fixed_amount
+}
+
+enum NotificationType {
+  user
+  store
+  admin
+  driver
+}
+
+enum AuthMethod {
+  email
+  phone
+  google
+  apple
+  facebook
+}
+
+enum AudienceType {
+  all
+  user
+  store
+  role
+  delivery_man
+  admin
+}
