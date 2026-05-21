@@ -1,32 +1,46 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber ,IsEnum } from "class-validator";
-import { AuthMethod } from "../../generated/prisma/enums";
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  MinLength,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { AuthMethod } from '../../generated/prisma/enums';
 
 export class RegisterUserDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  name?: string;
 
-    @IsOptional()
-    @IsString()
-    email: string;
+  @IsOptional()
+  @IsEmail()
+  email?: string;
 
-    @IsOptional()
-    @IsString()
-    phone: string;
+  @IsOptional()
+  @IsString()
+  @Length(11, 11)
+  phone?: string;
 
-    @IsOptional()
-    @IsString()
-    password: string;
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  password?: string;
 
-    @IsOptional()
-    @IsNumber()
-    role_id: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  role_id?: number;
 
-    @IsOptional()
-    @IsEnum(AuthMethod)
-    auth_method: AuthMethod;
+  @IsOptional()
+  @IsEnum(AuthMethod)
+  auth_method?: AuthMethod;
 
-    @IsOptional()
-    @IsString()
-    referred_by_code: string;
+  @IsOptional()
+  @IsString()
+  referred_by_code?: string;
 }

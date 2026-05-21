@@ -10,21 +10,21 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 @Controller('/api/v1/roles')
 export class RoleController {
     constructor(private readonly roleService: RoleService) { }
-   
 
-     
+
+
     @Get('all')
     async allRoles() {
         return this.roleService.allRoles();
     }
-@UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Post('create')
     async createRole(@Body() body: CreateRoleDto) {
         return this.roleService.create(body);
     }
 
 
-@UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Patch('update/:id')
     async update(@Param('id') id: string, @Body() body: UpdateRoleDto) {
         return this.roleService.update(+id, body)
