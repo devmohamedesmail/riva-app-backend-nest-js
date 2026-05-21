@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PermissionModule } from './permission/permission.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SettingsModule } from './settings/settings.module';
 
 
 @Module({
@@ -14,7 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule],
   controllers: [AppController],
   providers: [AppService],
 })

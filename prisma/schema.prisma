@@ -12,6 +12,53 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+model Setting {
+  id      Int     @id @default(autoincrement())
+  name_ar String
+  name_en String
+  logo    String?
+  banner  String?
+
+  // user version
+  version             String
+  user_min_version    String?
+  user_force_update   Boolean @default(false)
+  user_update_title   String?
+  user_update_message String?
+  user_android_url    String?
+  user_ios_url        String?
+
+  // vendor version
+  vendor_version        String?
+  vendor_min_version    String?
+  vendor_force_update   Boolean @default(false)
+  vendor_update_title   String?
+  vendor_update_message String?
+  vendor_android_url    String?
+  vendor_ios_url        String?
+
+  description         String
+  url                 String
+  email               String
+  phone               String
+  address             String
+  facebook            String
+  instagram           String
+  twitter             String
+  whatsapp            String
+  telegram            String
+  support_phone       String?
+  support_chat        String?
+  support_email       String?
+  support_address     String?
+  support_hours       String?
+  support_whatsapp    String?
+  maintenance_mode    Boolean @default(false)
+  maintenance_message String?
+  order_extra_ratio   String?
+
+  @@map("settings")
+}
 
 model Permission {
   id          Int              @id @default(autoincrement())
