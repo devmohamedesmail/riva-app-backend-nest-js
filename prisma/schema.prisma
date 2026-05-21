@@ -39,7 +39,7 @@ model Role {
   role        String           @unique
   slug        String?          @unique
   title_ar    String?
-  title_en   String?
+  title_en    String?
   isActive    Boolean          @default(true)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt

@@ -1,12 +1,24 @@
-import { IsOptional, IsString } from "class-validator";
+import {
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class UpdateRoleDto {
-    @IsString()
-    name: string;
+  @IsOptional()
+  @IsString()
+  @Length(3, 30)
+  role?: string;
 
-    @IsString()
-    description:string
+  @IsOptional()
+  @IsString()
+  slug?: string;
 
-    @IsOptional()
-    slug:string
+  @IsOptional()
+  @IsString()
+  title_ar?: string;
+
+  @IsOptional()
+  @IsString()
+  title_en?: string;
 }

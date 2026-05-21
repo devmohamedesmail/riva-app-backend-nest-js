@@ -1,12 +1,23 @@
-import { IsOptional, IsString } from "class-validator";
+import {
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class CreateRoleDto {
-    @IsString()
-    name: string;
+  @IsString()
+  @Length(3, 30)
+  role!: string;
 
-    @IsString()
-    description:string
+  @IsOptional()
+  @IsString()
+  slug?: string;
 
-    @IsOptional()
-    slug:string
+  @IsOptional()
+  @IsString()
+  title_ar?: string;
+
+  @IsOptional()
+  @IsString()
+  title_en?: string;
 }
