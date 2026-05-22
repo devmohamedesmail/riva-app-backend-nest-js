@@ -8,6 +8,7 @@ import { PermissionModule } from './permission/permission.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SettingsModule } from './settings/settings.module';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -15,7 +16,7 @@ import { SettingsModule } from './settings/settings.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
