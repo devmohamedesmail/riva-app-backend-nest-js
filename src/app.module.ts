@@ -22,6 +22,9 @@ import { AddressModule } from './address/address.module';
 import { DeliveryLocationModule } from './delivery-location/delivery-location.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SocketModule } from './socket/socket.module';
+import { OrdersModule } from './orders/orders.module';
+import { SendMailService } from './send-mail/send-mail.service';
+import { PushNotificationService } from './push-notification/push-notification.service';
 
 
 @Module({
@@ -29,8 +32,8 @@ import { SocketModule } from './socket/socket.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule, AddressModule, DeliveryLocationModule, NotificationsModule,SocketModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule, AddressModule, DeliveryLocationModule, NotificationsModule,SocketModule, OrdersModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SendMailService, PushNotificationService],
 })
 export class AppModule { }
