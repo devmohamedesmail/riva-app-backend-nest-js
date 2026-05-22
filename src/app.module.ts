@@ -17,6 +17,7 @@ import { StoreTypesModule } from './store-types/store-types.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { ProductAttributesModule } from './product-attributes/product-attributes.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 
 @Module({
@@ -24,7 +25,7 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule],
   controllers: [AppController],
   providers: [AppService],
 })
