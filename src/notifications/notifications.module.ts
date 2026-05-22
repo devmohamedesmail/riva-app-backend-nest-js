@@ -8,6 +8,7 @@ import { SocketModule } from '../socket/socket.module';
     SocketModule,
   ],
   providers: [NotificationsService],
-  controllers: [NotificationsController]
+  controllers: [NotificationsController],
+  exports: [NotificationsService],
 })
 export class NotificationsModule {}
