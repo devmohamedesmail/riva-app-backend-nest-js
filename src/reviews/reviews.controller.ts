@@ -6,12 +6,14 @@ import {
   Param,
   Post,
   Put,
+  UseGuards
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 
-@Controller('reviews')
+@Controller('/api/v1/reviews')
 export class ReviewsController {
     constructor(private readonly reviewService: ReviewsService) {}
 
@@ -35,6 +37,7 @@ export class ReviewsController {
   /**
    * Get Reviews By User
    */
+  @UseGuards(JwtAuthGuard)
   @Get('user/:user_id')
   getByUser(@Param('user_id') user_id: string) {
     return this.reviewService.getByUser(Number(user_id));
@@ -43,6 +46,7 @@ export class ReviewsController {
   /**
    * Find Review By ID
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reviewService.findOne(Number(id));
@@ -51,6 +55,7 @@ export class ReviewsController {
   /**
    * Create Review
    */
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   create(@Body() dto: CreateReviewDto) {
     return this.reviewService.create(dto);
@@ -59,6 +64,7 @@ export class ReviewsController {
   /**
    * Update Review
    */
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -70,6 +76,7 @@ export class ReviewsController {
   /**
    * Delete Review
    */
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reviewService.remove(Number(id));
