@@ -15,7 +15,7 @@ import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 
-@Controller('areas')
+@Controller('/api/v1/areas')
 export class AreasController {
     constructor(private readonly areasService: AreasService) { }
 

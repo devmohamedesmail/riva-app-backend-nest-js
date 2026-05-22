@@ -13,6 +13,7 @@ import { UserDevicesModule } from './user-devices/user-devices.module';
 import { BannersModule } from './banners/banners.module';
 import { PlacesModule } from './places/places.module';
 import { AreasModule } from './areas/areas.module';
+import { StoreTypesModule } from './store-types/store-types.module';
 
 
 @Module({
@@ -20,7 +21,7 @@ import { AreasModule } from './areas/areas.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule],
   controllers: [AppController],
   providers: [AppService],
 })
