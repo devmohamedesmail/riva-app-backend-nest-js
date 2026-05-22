@@ -19,6 +19,7 @@ import { ProductsModule } from './products/products.module';
 import { ProductAttributesModule } from './product-attributes/product-attributes.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { AddressModule } from './address/address.module';
+import { DeliveryLocationModule } from './delivery-location/delivery-location.module';
 
 
 @Module({
@@ -26,7 +27,7 @@ import { AddressModule } from './address/address.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule, AddressModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule, AddressModule, DeliveryLocationModule],
   controllers: [AppController],
   providers: [AppService],
 })
