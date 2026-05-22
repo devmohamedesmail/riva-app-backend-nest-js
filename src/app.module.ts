@@ -11,6 +11,7 @@ import { SettingsModule } from './settings/settings.module';
 import { UsersModule } from './users/users.module';
 import { UserDevicesModule } from './user-devices/user-devices.module';
 import { BannersModule } from './banners/banners.module';
+import { PlacesModule } from './places/places.module';
 
 
 @Module({
@@ -18,7 +19,7 @@ import { BannersModule } from './banners/banners.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule],
   controllers: [AppController],
   providers: [AppService],
 })
