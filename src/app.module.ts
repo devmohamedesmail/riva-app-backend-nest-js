@@ -20,6 +20,8 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
 import { ReviewsModule } from './reviews/reviews.module';
 import { AddressModule } from './address/address.module';
 import { DeliveryLocationModule } from './delivery-location/delivery-location.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { SocketModule } from './socket/socket.module';
 
 
 @Module({
@@ -27,7 +29,7 @@ import { DeliveryLocationModule } from './delivery-location/delivery-location.mo
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule, AddressModule, DeliveryLocationModule],
+    }), AuthModule, RoleModule, PermissionModule, CloudinaryModule, PrismaModule, SettingsModule, UsersModule, UserDevicesModule, BannersModule, PlacesModule, AreasModule, StoreTypesModule, CategoriesModule, ProductsModule, ProductAttributesModule, ReviewsModule, AddressModule, DeliveryLocationModule, NotificationsModule,SocketModule],
   controllers: [AppController],
   providers: [AppService],
 })
