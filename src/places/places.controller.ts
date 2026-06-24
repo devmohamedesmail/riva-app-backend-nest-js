@@ -42,13 +42,13 @@ export class PlacesController {
 
     
     @UseGuards(JwtAuthGuard)
-    @Post()
+    @Post('create')
     create(@Body() dto: CreatePlaceDto) {
         return this.service.create(dto);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put(':id')
+    @Put('update/:id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdatePlaceDto,

@@ -1,5 +1,5 @@
 import { AuthGuard } from '@nestjs/passport';
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Delete,Patch,UseInterceptors ,UploadedFile} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Delete,Patch,UseInterceptors ,UploadedFile, Get} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -23,7 +23,7 @@ export class AuthController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Post('get-profile')
+    @Get('get-profile')
     async profile(@Req() req: any) {
         return this.authService.profile(req.user);
     }

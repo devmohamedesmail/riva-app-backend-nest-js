@@ -101,7 +101,13 @@ export class AuthService {
                 name: true,
                 email: true,
                 phone: true,
-                role: true,
+                role: {
+                    select: {
+                        id: true,
+                        role: true,
+                        slug: true,
+                    },
+                },
             },
         });
 
@@ -117,7 +123,7 @@ export class AuthService {
             email: user.email,
         });
 
-        return { user, token };
+        return { success: true, user, token };
     }
 
 
@@ -198,6 +204,7 @@ export class AuthService {
 
         // response
         return {
+            success: true,
             user: {
                 id: user.id,
                 name: user.name,
@@ -216,29 +223,81 @@ export class AuthService {
      * - Load user with relations
      * - Include role, store and vehicle
      */
+    // async profile(user: any) {
+
+
+    //     const fullUser = await this.prisma.user.findUnique({
+    //         where: {
+    //             id: user.id,
+    //         },
+
+    //         include: {
+    //             role: true,
+    //             store: {
+    //                 include: {
+    //                     reviews: true,
+    //                 },
+    //             },
+    //             vehicle: true,
+    //         },
+    //     });
+
+    //     if (!fullUser) {
+    //         throw new NotFoundException('User not found');
+    //     }
+
+    //     return { success: true, data: fullUser };
+    // }
+
+
     async profile(user: any) {
-        console.log(user);
 
         const fullUser = await this.prisma.user.findUnique({
             where: {
                 id: user.id,
             },
-            include: {
-                role: true,
+            select: {
+                id: true,
+                email: true,
+                phone: true,
+                name: true,
+                avatar: true,
+                email_verified: true,
+                phone_verified: true,
+                auth_method: true,
+                is_active: true,
+                points: true,
+                wallet_balance: true,
+
+                role: {
+                    select: {
+                        id: true,
+                        role: true,
+                        slug: true,
+                        title_ar: true,
+                        title_en: true,
+                    }
+                },
+
                 store: {
                     include: {
                         reviews: true,
                     },
                 },
+
                 vehicle: true,
             },
         });
+
 
         if (!fullUser) {
             throw new NotFoundException('User not found');
         }
 
-        return fullUser;
+        return {
+            success: true,
+            data: fullUser,
+        };
     }
 
 

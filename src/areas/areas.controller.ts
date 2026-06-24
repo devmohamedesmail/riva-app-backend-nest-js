@@ -25,7 +25,7 @@ export class AreasController {
      * @returns 
      */
     @UseGuards(JwtAuthGuard)
-    @Post()
+    @Post('create')
     create(@Body() dto: CreateAreaDto) {
         return this.areasService.create(dto);
     }

@@ -86,6 +86,9 @@ export class AreasService {
     async findOne(id: number) {
         const area = await this.prisma.area.findUnique({
             where: { id },
+            include: {
+                place: true,
+            },
         });
 
         if (!area) {

@@ -48,13 +48,13 @@ export class PlacesService {
                 address: dto.address,
                 latitude: dto.latitude,
                 longitude: dto.longitude,
-                storeTypes: {
-                    create: dto.store_type_ids.map((id) => ({
-                        storeType: { connect: { id } },
-                    })),
-                },
+                // storeTypes: {
+                //     create: dto.store_type_ids.map((id) => ({
+                //         storeType: { connect: { id } },
+                //     })),
+                // },
             },
-            include: { storeTypes: { include: { storeType: true } } },
+            // include: { storeTypes: { include: { storeType: true } } },
         });
 
         return { success: true, data: place };
@@ -92,7 +92,7 @@ export class PlacesService {
         const updated = await this.prisma.place.update({
             where: { id },
             data,
-            include: { storeTypes: { include: { storeType: true } } },
+            // include: { storeTypes: { include: { storeType: true } } },
         });
 
         return { success: true, data: updated };
@@ -102,6 +102,13 @@ export class PlacesService {
     async remove(id: number) {
         const place = await this.prisma.place.findUnique({ where: { id } });
         if (!place) throw new NotFoundException('Place not found');
+
+        await this.prisma.placeStoreType.deleteMany({
+            where: {
+                place_id: id,
+            },
+        });
+
 
         await this.prisma.place.delete({ where: { id } });
 

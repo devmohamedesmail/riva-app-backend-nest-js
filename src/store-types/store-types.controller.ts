@@ -55,7 +55,7 @@ export class StoreTypesController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post()
+    @Post('create')
     @UseInterceptors(
         FileInterceptor('image'),
     )
@@ -71,7 +71,7 @@ export class StoreTypesController {
 
 
     @UseGuards(JwtAuthGuard)
-    @Put(':id')
+    @Put('update/:id')
     @UseInterceptors(
         FileInterceptor('image'),
     )
@@ -90,6 +90,11 @@ export class StoreTypesController {
             dto,
             file,
         );
+    }
+
+    @Get('place/:placeId')
+     getStoreTypesByPlaceId(@Param('placeId', ParseIntPipe) id: number) {
+        return this.service.getStoreTypesByPlaceId(id);
     }
 
     @UseGuards(JwtAuthGuard)

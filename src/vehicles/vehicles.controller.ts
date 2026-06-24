@@ -1,4 +1,5 @@
-import { Controller,
+import {
+  Controller,
   Post,
   Get,
   Put,
@@ -7,7 +8,8 @@ import { Controller,
   Param,
   UploadedFile,
   UseInterceptors,
-  Req, } from '@nestjs/common';
+  Req,
+} from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
@@ -17,7 +19,7 @@ import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 export class VehiclesController {
 
 
-    constructor(private readonly vehicleService: VehiclesService) {}
+  constructor(private readonly vehicleService: VehiclesService) { }
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
