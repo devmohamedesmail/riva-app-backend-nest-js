@@ -264,6 +264,97 @@ export class OrdersService {
         };
     }
 
+
+
+    async getDailyOrders(query: any) {
+        const page = Number(query.page) || 1;
+        const limit = Number(query.limit) || 10;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const orderGroups = await this.prisma.orderGroup.findMany({
+            where: {
+                createdAt: {
+                    gte: today,
+                    lt: tomorrow,
+                },
+            },
+
+            include: {
+                orders: {
+                    select: {
+                        id: true,
+                        total_price: true,
+                        status: true,
+                        createdAt: true,
+
+                        store: {
+                            select: {
+                                id: true,
+                                name: true,
+                                address: true,
+                                phone: true,
+                            },
+                        },
+
+                        orderItems: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true,
+                                price: true,
+                                quantity: true,
+                                attribute_name: true,
+                                attribute_value: true,
+                                attribute_price: true,
+                            },
+                        },
+                    },
+                },
+            },
+
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        const formatted = orderGroups.map((group) => {
+            const total_price = group.orders.reduce(
+                (sum, order) => sum + order.total_price,
+                0,
+            );
+
+            return {
+                order_group_id: group.id,
+                group_code: group.group_code,
+                customer_name: group.customer_name,
+                phone: group.phone,
+                delivery_address: group.delivery_address,
+                createdAt: group.createdAt,
+                area_name: group.area_name,
+                delivery_fee: group.delivery_fee,
+                status: group.status,
+                total_price,
+                orders: group.orders,
+            };
+        });
+
+        return {
+            success: true,
+            data: formatted,
+            pagination: {
+                current_page: page,
+                per_page: limit,
+                total_orders: formatted.length,
+                total_pages: Math.ceil(formatted.length / limit),
+            },
+        };
+    }
+
     /**
      * Find Order
      */
@@ -358,6 +449,91 @@ export class OrdersService {
                     total_orders: total,
                     total_pages: Math.ceil(total / limit),
                 },
+            },
+        };
+    }
+
+
+    async getStoreOrders(
+        store_id: number,
+        query: any,
+    ) {
+        const page = Number(query.page) || 1;
+        const per_page = Number(query.per_page) || 10;
+
+        const skip = (page - 1) * per_page;
+
+        const total = await this.prisma.orderGroup.count({
+            where: {
+                orders: {
+                    some: {
+                        store_id,
+                    },
+                },
+            },
+        });
+
+        const orders = await this.prisma.orderGroup.findMany({
+            where: {
+                orders: {
+                    some: {
+                        store_id,
+                    },
+                },
+            },
+
+            select: {
+                id: true,
+                group_code: true,
+                customer_name: true,
+                phone: true,
+                delivery_address: true,
+                area_name: true,
+                delivery_fee: true,
+                status: true,
+
+                orders: {
+                    where: {
+                        store_id,
+                    },
+
+                    select: {
+                        id: true,
+                        total_price: true,
+                        status: true,
+
+                        orderItems: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true,
+                                price: true,
+                                quantity: true,
+                                attribute_name: true,
+                                attribute_value: true,
+                                attribute_price: true,
+                            },
+                        },
+                    },
+                },
+            },
+
+            orderBy: {
+                createdAt: 'desc',
+            },
+
+            skip,
+            take: per_page,
+        });
+
+        return {
+            success: true,
+            data: orders,
+            pagination: {
+                current_page: page,
+                per_page,
+                total_orders: total,
+                total_pages: Math.ceil(total / per_page),
             },
         };
     }
@@ -602,4 +778,102 @@ export class OrdersService {
             console.log(error);
         }
     }
+
+
+    async getTodayStoreOrders(
+  store_id: number,
+  query: any,
+) {
+  const page = Number(query.page) || 1;
+  const per_page = Number(query.per_page) || 10;
+  const skip = (page - 1) * per_page;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const total = await this.prisma.orderGroup.count({
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+      orders: {
+        some: {
+          store_id,
+        },
+      },
+    },
+  });
+
+  const orders = await this.prisma.orderGroup.findMany({
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+      orders: {
+        some: {
+          store_id,
+        },
+      },
+    },
+
+    select: {
+      id: true,
+      group_code: true,
+      customer_name: true,
+      phone: true,
+      delivery_address: true,
+      area_name: true,
+      delivery_fee: true,
+      createdAt: true,
+      status: true,
+
+      orders: {
+        where: {
+          store_id,
+        },
+
+        select: {
+          total_price: true,
+          status: true,
+
+          orderItems: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              price: true,
+              quantity: true,
+              attribute_name: true,
+              attribute_value: true,
+              attribute_price: true,
+            },
+          },
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: 'desc',
+    },
+
+    skip,
+    take: per_page,
+  });
+
+  return {
+    success: true,
+    data: orders,
+    pagination: {
+      current_page: page,
+      per_page,
+      total_orders: total,
+      total_pages: Math.ceil(total / per_page),
+    },
+  };
+}
 }

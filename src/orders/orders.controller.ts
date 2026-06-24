@@ -1,25 +1,39 @@
-import {  Body,
+import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
   Post,
-  Query, } from '@nestjs/common';
+  Query,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateGroupOrderDto } from './dto/create-group-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
-@Controller('orders')
+@Controller('/api/v1/orders')
 export class OrdersController {
-    constructor(
+  constructor(
     private readonly ordersService: OrdersService,
-  ) {}
+  ) { }
 
   @Get()
   index(@Query() query: any) {
     return this.ordersService.index(query);
   }
+
+  /**
+  * GET /orders/dialy/orders
+  */
+  @Get('dialy/orders')
+  getDailyOrders(@Query() query: any) {
+    return this.ordersService.getDailyOrders(query);
+  }
+
+
+
+  
 
   @Get('statistics')
   statistics(@Query() query: any) {
@@ -41,6 +55,33 @@ export class OrdersController {
       query,
     );
   }
+
+    /**
+   * GET /orders/store/:store_id
+   */
+  @Get('store/:store_id')
+  getStoreOrders(
+    @Param('store_id') store_id: string,
+    @Query() query: any,
+  ) {
+    return this.ordersService.getStoreOrders(
+      Number(store_id),
+      query,
+    );
+  }
+
+
+  @Get('store/:store_id/today')
+getTodayStoreOrders(
+  @Param('store_id') store_id: string,
+  @Query() query: any,
+) {
+  return this.ordersService.getTodayStoreOrders(
+    Number(store_id),
+    query,
+  );
+}
+
 
   @Post('create-group')
   createGroupOrder(
