@@ -12,6 +12,8 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+
 model Setting {
   id      Int     @id @default(autoincrement())
   name_ar String
@@ -95,6 +97,7 @@ model Role {
 
   @@map("roles")
 }
+
 model User {
   id             Int         @id @default(autoincrement())
   email          String?     @unique
