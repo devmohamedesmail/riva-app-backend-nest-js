@@ -93,38 +93,55 @@ export class OrdersService {
                     });
                 }
 
-                orders.push(order);
+                // orders.push(order);
+                orders.push({
+                    ...order,
+                    items,
+                });
             }
 
             return { orderGroup, orders };
         });
 
         // 3. Notifications (outside transaction)
-        if (!user_id) {
-            throw new Error('user_id is required');
-        }
+        // if (!user_id) {
+        //     throw new Error('user_id is required');
+        // }
+        // try {
+        //     for (const order of result.orders) {
+        //         await this.sendOrderNotification(
+        //             order,
+        //             user_id,
+        //             customer_name,
+        //             order.store_id,
+        //         );
+        //     }
+        // } catch (err) {
+        //     console.error('Socket notification error:', err);
+        // }
+
         try {
-            for (const order of result.orders) {
-                await this.sendOrderNotification(
-                    order,
-                    user_id,
-                    customer_name,
-                    order.store_id,
-                );
+            if (user_id) {
+                for (const order of result.orders) {
+                    await this.sendOrderNotification(
+                        order,
+                        user_id,
+                        customer_name,
+                        order.store_id,
+                    );
+                }
             }
+            console.log('Socket notifications sent successfully');
         } catch (err) {
-            console.error('Socket notification error:', err);
+            console.log('Socket notification error:', err);
         }
 
-        // 4. Email (safe call)
-        try {
-            await this.mailService.sendOrderEmail({
-                order_group_id: result.orderGroup.group_code,
-                orders: result.orders,
-            });
-        } catch (err) {
-            console.error('Email error:', err);
-        }
+      
+
+        await this.handleOrderEmail(
+            result.orderGroup,
+            result.orders,
+        );
 
         return {
             success: true,
@@ -781,99 +798,122 @@ export class OrdersService {
 
 
     async getTodayStoreOrders(
-  store_id: number,
-  query: any,
-) {
-  const page = Number(query.page) || 1;
-  const per_page = Number(query.per_page) || 10;
-  const skip = (page - 1) * per_page;
+        store_id: number,
+        query: any,
+    ) {
+        const page = Number(query.page) || 1;
+        const per_page = Number(query.per_page) || 10;
+        const skip = (page - 1) * per_page;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const total = await this.prisma.orderGroup.count({
-    where: {
-      createdAt: {
-        gte: today,
-        lt: tomorrow,
-      },
-      orders: {
-        some: {
-          store_id,
-        },
-      },
-    },
-  });
-
-  const orders = await this.prisma.orderGroup.findMany({
-    where: {
-      createdAt: {
-        gte: today,
-        lt: tomorrow,
-      },
-      orders: {
-        some: {
-          store_id,
-        },
-      },
-    },
-
-    select: {
-      id: true,
-      group_code: true,
-      customer_name: true,
-      phone: true,
-      delivery_address: true,
-      area_name: true,
-      delivery_fee: true,
-      createdAt: true,
-      status: true,
-
-      orders: {
-        where: {
-          store_id,
-        },
-
-        select: {
-          total_price: true,
-          status: true,
-
-          orderItems: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-              price: true,
-              quantity: true,
-              attribute_name: true,
-              attribute_value: true,
-              attribute_price: true,
+        const total = await this.prisma.orderGroup.count({
+            where: {
+                createdAt: {
+                    gte: today,
+                    lt: tomorrow,
+                },
+                orders: {
+                    some: {
+                        store_id,
+                    },
+                },
             },
-          },
-        },
-      },
-    },
+        });
 
-    orderBy: {
-      createdAt: 'desc',
-    },
+        const orders = await this.prisma.orderGroup.findMany({
+            where: {
+                createdAt: {
+                    gte: today,
+                    lt: tomorrow,
+                },
+                orders: {
+                    some: {
+                        store_id,
+                    },
+                },
+            },
 
-    skip,
-    take: per_page,
-  });
+            select: {
+                id: true,
+                group_code: true,
+                customer_name: true,
+                phone: true,
+                delivery_address: true,
+                area_name: true,
+                delivery_fee: true,
+                createdAt: true,
+                status: true,
 
-  return {
-    success: true,
-    data: orders,
-    pagination: {
-      current_page: page,
-      per_page,
-      total_orders: total,
-      total_pages: Math.ceil(total / per_page),
-    },
-  };
-}
+                orders: {
+                    where: {
+                        store_id,
+                    },
+
+                    select: {
+                        total_price: true,
+                        status: true,
+
+                        orderItems: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true,
+                                price: true,
+                                quantity: true,
+                                attribute_name: true,
+                                attribute_value: true,
+                                attribute_price: true,
+                            },
+                        },
+                    },
+                },
+            },
+
+            orderBy: {
+                createdAt: 'desc',
+            },
+
+            skip,
+            take: per_page,
+        });
+
+        return {
+            success: true,
+            data: orders,
+            pagination: {
+                current_page: page,
+                per_page,
+                total_orders: total,
+                total_pages: Math.ceil(total / per_page),
+            },
+        };
+    }
+
+
+    // =========================== extra services ===========================
+    private async handleOrderEmail(
+        orderGroup: any,
+        orders: any[],
+    ): Promise<void> {
+        try {
+            await this.mailService.sendOrderEmail({
+                orderGroup,
+                orders,
+            });
+
+            // this.logger.log('Order email sent successfully');
+            console.log('Order email sent successfully');
+        } catch (error) {
+            // this.logger.error(
+            //     'Order email failed',
+            //     error?.stack,
+            // );
+            console.log('Order email failed', error);
+        }
+    }
 }

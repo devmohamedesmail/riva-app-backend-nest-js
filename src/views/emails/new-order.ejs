@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Order</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,Helvetica,sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:30px 0;">
+        <tr>
+            <td align="center">
+
+                <table width="700" cellpadding="0" cellspacing="0"
+                    style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);">
+
+                    ```
+                    <!-- HEADER -->
+                    <tr>
+                        <td style="background:#fd6b01;padding:35px;text-align:center;color:#ffffff;">
+                            <h1 style="margin:0;font-size:32px;">
+                                🍔 Riva Food
+                            </h1>
+
+                            <p style="margin:10px 0 0;font-size:16px;">
+                                New Order Received
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- ORDER STATUS -->
+                    <tr>
+                        <td style="padding:25px 30px;">
+                            <div style="
+            background:#fff7f0;
+            border:1px solid #ffd3b3;
+            border-radius:10px;
+            padding:15px;
+        ">
+                                <strong>Order Code:</strong>
+                                <%= orderGroup.group_code %>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- CUSTOMER INFO -->
+                    <tr>
+                        <td style="padding:0 30px 20px;">
+                            <h2 style="margin-bottom:15px;color:#333;">
+                                Customer Information
+                            </h2>
+
+                            <table width="100%" cellpadding="10" style="border:1px solid #eee;border-radius:10px;">
+
+                                <tr>
+                                    <td width="180"><strong>Customer Name</strong></td>
+                                    <td>
+                                        <%= orderGroup.customer_name || 'Guest Customer' %>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Phone</strong></td>
+                                    <td>
+                                        <%= orderGroup.phone || '-' %>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Address</strong></td>
+                                    <td>
+                                        <%= orderGroup.delivery_address || '-' %>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Area</strong></td>
+                                    <td>
+                                        <%= orderGroup.area_name || '-' %>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Delivery Fee</strong></td>
+                                    <td>
+                                        <%= orderGroup.delivery_fee || 0 %> EGP
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Created At</strong></td>
+                                    <td>
+                                        <%= new Date().toLocaleString() %>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ORDERS -->
+                    <tr>
+                        <td style="padding:0 30px 20px;">
+
+                            <h2 style="color:#333;">
+                                Store Orders
+                            </h2>
+
+                            <% let grandTotal=0; %>
+
+                                <% orders.forEach(order=> { %>
+
+                                    <% grandTotal +=Number(order.total_price || 0); %>
+
+                                        <div style="
+                margin-bottom:25px;
+                border:1px solid #ececec;
+                border-radius:12px;
+                overflow:hidden;
+            ">
+
+                                            <div style="
+                    background:#fafafa;
+                    padding:15px 20px;
+                    border-bottom:1px solid #ececec;
+                ">
+                                                <h3 style="margin:0;">
+                                                    Store #<%= order.store_id %>
+                                                </h3>
+
+                                                <p style="margin-top:8px;color:#666;">
+                                                    Order ID: <%= order.id %>
+                                                </p>
+                                            </div>
+
+                                            <div style="padding:20px;">
+
+                                                <table width="100%" cellpadding="10" cellspacing="0"
+                                                    style="border-collapse:collapse;">
+
+                                                    <thead>
+                                                        <tr style="background:#f7f7f7;">
+                                                            <th align="left">Item</th>
+                                                            <th align="center">Qty</th>
+                                                            <th align="center">Price</th>
+                                                            <th align="center">Attribute</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+
+                                                        <% order.items.forEach(item=> { %>
+
+                                                            <tr style="border-top:1px solid #eee;">
+                                                                <td>
+                                                                    <strong>
+                                                                        <%= item.name %>
+                                                                    </strong>
+                                                                </td>
+
+                                                                <td align="center">
+                                                                    <%= item.quantity %>
+                                                                </td>
+
+                                                                <td align="center">
+                                                                    <%= item.price %> EGP
+                                                                </td>
+
+                                                                <td align="center">
+                                                                    <% if(item.attribute_name){ %>
+
+                                                                        <%= item.attribute_name %>
+                                                                            :
+                                                                            <%= item.attribute_value %>
+
+                                                                                <% if(item.attribute_price){ %>
+                                                                                    (+<%= item.attribute_price %>)
+                                                                                        <% } %>
+
+                                                                                            <% } else { %>
+                                                                                                -
+                                                                                                <% } %>
+                                                                </td>
+                                                            </tr>
+
+                                                            <% }) %>
+
+                                                    </tbody>
+
+                                                </table>
+
+                                                <div style="
+                        margin-top:15px;
+                        text-align:right;
+                        font-size:18px;
+                    ">
+                                                    <strong>
+                                                        Store Total:
+                                                        <%= order.total_price %> EGP
+                                                    </strong>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <% }) %>
+
+                        </td>
+                    </tr>
+
+                    <!-- TOTAL -->
+                    <tr>
+                        <td style="padding:0 30px 30px;">
+
+                            <div style="
+            background:#fd6b01;
+            color:#ffffff;
+            border-radius:12px;
+            padding:25px;
+        ">
+
+                                <table width="100%">
+                                    <tr>
+                                        <td>
+                                            <h2 style="margin:0;">
+                                                Grand Total
+                                            </h2>
+                                        </td>
+
+                                        <td align="right">
+                                            <h1 style="margin:0;">
+                                                <%= grandTotal + Number(orderGroup.delivery_fee || 0) %> EGP
+                                            </h1>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="
+        background:#fafafa;
+        text-align:center;
+        padding:25px;
+        color:#777;
+        font-size:13px;
+    ">
+
+                            <strong>Riva Food</strong>
+
+                            <br><br>
+
+                            Order Management Notification
+
+                            <br><br>
+
+                            © <%= new Date().getFullYear() %> Riva Food
+
+                        </td>
+                    </tr>
+                    ```
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

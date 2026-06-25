@@ -83,8 +83,9 @@ export class CreateGroupOrderDto {
   @IsString()
   area_name?: string;
 
+  @IsOptional()
   @IsNumber()
-  user_id!: number;
+  user_id?: number;
 
   @IsOptional()
   @IsNumber()

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import nodemailer from 'nodemailer';
+import ejs from 'ejs';
+import path from 'path';
+
+
 @Injectable()
 export class SendMailService {
     private transporter =
@@ -28,10 +32,24 @@ export class SendMailService {
   }
 
   async sendOrderEmail(data: any) {
+
+     const html = await ejs.renderFile(
+        path.join(
+            process.cwd(),
+            'src',
+            'views',
+            'emails',
+            'new-order.ejs',
+        ),
+        {
+            orderGroup: data.orderGroup,
+            orders: data.orders,
+        },
+    );
     await this.sendMail(
       'dev.mohamed.esmail@gmail.com',
       'New Order',
-      `<h1>New Order</h1>`,
+      html,
     );
   }
 }

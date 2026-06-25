@@ -33,7 +33,7 @@ export class OrdersController {
 
 
 
-  
+
 
   @Get('statistics')
   statistics(@Query() query: any) {
@@ -56,9 +56,9 @@ export class OrdersController {
     );
   }
 
-    /**
-   * GET /orders/store/:store_id
-   */
+  /**
+ * GET /orders/store/:store_id
+ */
   @Get('store/:store_id')
   getStoreOrders(
     @Param('store_id') store_id: string,
@@ -72,15 +72,15 @@ export class OrdersController {
 
 
   @Get('store/:store_id/today')
-getTodayStoreOrders(
-  @Param('store_id') store_id: string,
-  @Query() query: any,
-) {
-  return this.ordersService.getTodayStoreOrders(
-    Number(store_id),
-    query,
-  );
-}
+  getTodayStoreOrders(
+    @Param('store_id') store_id: string,
+    @Query() query: any,
+  ) {
+    return this.ordersService.getTodayStoreOrders(
+      Number(store_id),
+      query,
+    );
+  }
 
 
   @Post('create-group')
